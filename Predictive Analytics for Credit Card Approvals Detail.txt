@@ -1,0 +1,634 @@
+Predictive analytics for credit card approval:
+
+
+
+Focus of this project is to build a predictive model for determining whether a credit card application should be approved or reject. Aim is to determine the creditworthiness of card holder and minimize the risk of granting credit card authentication without proper evaluation. The bank's credit card department has a long history of using data science techniques, specifically Credit Scoring, to assess creditworthiness. The model used for credit assessment is known as an application scorecard, which helps estimate the level of risk posed by an applicant and determines the cut-off value for credit card approvals.
+
+
+To evaluate creditworthiness, the bank collects application data from customers who apply for credit cards. This data, along with external information such as Credit Bureau Scores (e.g., FICO Score in the US or CIBIL Score in India) and other internal data, is used to make informed decisions regarding credit card approvals. The bank also incorporates additional external data to enhance the accuracy of credit judgments.
+
+
+The project structure involves an introduction to the project's purpose, followed by an explanation of the business problem and its potential impact on the banking sector. The dataset will be explored, and initial data analysis and pre-processing steps will be performed. Feature engineering techniques will be applied to enhance the predictive power of the models. Various machine learning models will be implemented to predict credit card approval, and hyper parameter tuning will be performed to optimize their performance. Finally, the results from the different models will be summarized.
+
+
+Overall, the project aims to develop a reliable predictive model that can assist the credit card department in making informed decisions about approving or rejecting credit card applications. This model has the potential to reduce risks associated with granting credit cards to unqualified applicants and improve the overall efficiency and accuracy of the credit assessment process in the banking sector.
+
+
+In this project, we are using Credit Card Approval Dataset from Kaggle. The structure of our project will be as follows -
+
+
+•	Basic introduction of the project
+•	What’s the business problem associated with it and how is it going to impact the banking sector?
+•	Basic Exploration of the dataset.
+•	Exploratory Data Analysis (EDA) and Data Pre-processing
+•	Feature Engineering
+•	Applying different Machine Learning models that can predict if an individual’s application for a credit card will be accepted or not.
+•	Performing Hyper Parameter Tuning to optimize the performance of models
+•	Summarizing the results
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Credit_card = Credit_card_dataset
+Credit_card_label = CC_Label
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* Introduction:
+	Banking runs on lending and borrowing. But b4 lending the money we need to check the creditworthiness of a borrower. 
+
+* Data Collection:	
+	Dataset is fetch from kaggle.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Data Exploration:
+	- Dataset name is Credit_card_dataset which has 18 features and 1548 Observations. Observation contains personal, Financial 	and employement data of clients.
+	Undestanding the data: 
+
+	- Importeed all the required Libraries such as pandas, numpy, seaborn, matplotlib, Sklearn for model building, XgBoost, Warnings to 	filter warnings.
+
+	- Imported both the dataset and target dataset.
+
+	- Find out data types of feature which are integer, float and object type.
+
+	- By exploring the data get to know that sum features had null values. Then we checked for unique values so that we can get to 		know that is their any special character, Blank space or any extrem character present.
+
+	- From the analysis we get to know that their is no null value present but there are extream positive value presents in the column 	'Employed_days'. we need to deal with it. Because the values in this column will vary from the regular pattern.
+
+	- Then checked for duplicate values if there any.
+
+	- Then visualized the count of occurence of approved and rejected application using seaborn.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Some Observation from the dataset:
+	- From all the 18 features 6 are numeric and 12 are categorical from which 3 are continuous and 3 are discrete.
+
+	- From 12 categorical features Education column is nominal except that all are nominal.
+
+ 	- Gender, Annual_income, Birthday_count and Occupation have Null records out of which Type_Occupation have highest number of NULL 	records (around 31.5%).
+
+	- Target variable is binary and highly imbalanced. High imbalance between Approved and Rejected application.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Performing Data Analysis:
+	- Made all the columns in same case.(Capitalized or Lowercase).
+	
+	- Dropping unecessary columns.
+	- After that to optimize the performance we heve to convert the datatypes of categorical data to category.
+	- Plotted a correlation matrix from that we get to know that there is a strong corelation between `children` and `family_member`.
+
+* Univariate Analysis:	
+	- Plotted the overall plot of data from that observed that family_member and children have linear relationship which is obvious no of 		family members will increase with the increase in no of childrens.
+	- Annual_income and employed_type are slightly right skewed birthday_count is kind of normally distributed.
+
+* Categorical Data Analysis:
+
+	- Did a univariate analysis of a categorical data. Try to find out what categories it have and what no is every category is.
+	
+	- From the univariate analysis got the observation as:
+		1) We have 63% female and 37% male.
+		2) Almost 60% individuals does not own a car.
+		3) Almost 65% individuals are property owners.
+		4) 51% income comes from working, 23% are commercial associates, 17% are pensioner, 7% are state servant.
+		5) 67% peresived secondary education, 27% done higher education, 5% people have not completed higher education and only 0.13% 		have an academic degree.
+		6) For marrital status 68% are married,15% are unmarried, 6.5% have performed civil marriage and 11% are separeted or widows. 		Mejority people have low educational background
+		7) About 89% have their own houses/apartment, 5% of peoples live with there family, 4% living in municipal apartments and 		rest are live in office apartmentor co-op apartment
+		8) Maximum people neither have a work phone nor a phone. However, everyone owns a mobile phone.
+		9) 91% people don not have any any e-mail id.
+		10) For the occupation maximum 18% are laborers, 11% are corporate employee, 9% are managers and remaining are HR 		staff,reality agents, It staff and they are least in numbers 
+
+* Numerical Data Analysis: 
+	* For Discrete numeric data:	
+		- 52% individual have 2 family members rest are 1 or 3 			or have 4 peoples in family.
+
+		- About 71% of people dont have any child.
+	* For Continuous Numerical Data:
+		- From The pairplot we get to know that there has some 			extream values in it.	 
+	
+
+- Then checking value counts to uderstand extreme values. We get to observ that `employed_days` variable has extrem positive values which are affecting the reguar pattern. Positive values indicate that the individual is unemployed so we can simply replace those values with +1 which will help in preservng the pattern of the data.
+
+- So replaced extreme values of employed days to 1 and plotted to check the distribution.
+
+- By observing the plot after replacing the extream positive values it still have some outliers which have to be deal with it while analyzing.
+
+- While looking `employed_days` and `birth_count` columns they are justifying the work experiancce and age of an individual respectively. So tryed to convert these columns which will help in clear understanding and ease in analysis.
+
+* Feture Engineering:[Converted days to year]
+	- Created a new column by extracting data from other features converted days to years.
+	
+	- Now checked the Skewness values of original columns and Extracted columns. By cheking this not seen much diffrence just the 	magnitude is changed.
+
+	- So when we have created new columns we can delete the older ones in order to avoid multicolinearity.
+
+* Now created a subplot of `annual_income`, `Age` and `Work_experiance` and plotted boxplot
+
+	- From the plot `annual_income` and `work_experience` is right 	skewed have +3.92 and +1.66 respectively. We need to apply some 		transformations to make the distribution normal befour 	modeling.
+
+	- From work experience distribution it can be seen that most of the individuals are unemployed and most have less than 10 year 		experiance.
+
+	- Age column is almost normally distributed and have no outliers.
+
+
+* Performing Bivariate and  Multivariate analysis:
+	* Checked occupation distribution by gender:
+		- Laborers, low-skilled laborers, drivers, security staff have higher males compared to females also there are slightly 		greater male manageer than female manager.
+	
+		- In core staff job female presence is more than males.
+
+		- There are equal no of female in sales staff and Laborers.
+
+		- Sales staff has a high female than male. No of female in it is six time more than male.
+
+		- There seen a zero or very less male involment in occupation like Secretaries, Waiters/Barmen Staff, Reality Agents, Private 		Service Staff, Medicine Staff, IT Staff, HR Staff, Cleaning Staff, Accountants
+
+		- Females are present in all type of occupations.
+
+
+	* Checked distribution of gender by label:
+	
+		- Female has less approved application than male.
+		- As no of female is higher in the data hence the no of application accepted are higher in female case.
+
+	
+	* Cheking distribution of type_income by label:
+		
+		- Most of the working professional are Working hence there acceptance and rejection rate is highest
+
+		- State seervant category has the highest accepted to rejected application ratio.
+
+		- Pensioner category had the lowest accepted to reject application ratio.
+	
+		
+	* Cheking distribution of Education by label:
+	
+		- No application for academic degree holders was rejected
+
+		- For lower secondary education have lowest accepted to rejected application ratio that means that if a person is have lower 			secondary education background then higher chances of application being rejected.
+
+		- Most of the applications were rejected for secondary education category which is certainly due to many reason.
+
+	* Cheking distribution of Car_owner by label:
+
+		- Persons who dont own a car has higher rejection rate.
+	
+		- Persons who own a car has higher chances of application to be accepted.
+	
+		
+	* Cheking distribution of property_owner by label:
+		
+		- Persons owning property have higher rejection rate.
+			
+		- The accepted to rejected application ratio has higher for those who own property.
+
+
+	* Cheking distribution of family_member by label:
+
+		- No clear indication can be made for the reason of accepted and rejected applications from the graph.
+
+		- Individuals living in a family of 2 members have highest rejected applications.
+
+		- All applications were accepted for a family of 5 members.
+
+		- Individuals having a family of 4 members have higher accepted to rejected applications ratio compaered to other maority 		catergory of members.
+
+			
+	* Cheking distribution of email_id by label:
+
+		- Most of the individuals do not have email. Rejection applications are also high for those who dont have email.
+
+		- People not having an email have higher accepted to rejected applications ratio compaired to those who have email.
+
+
+	* Cheking distribution of marital_status by label:
+
+		- Married individuals have highest applications. 
+
+		- Individuals having civil marriage have higher accepted to rejected ratio. This indicates that people having civil 		marriage have highest chances of approval of credit card application.	
+
+		- Single individuals have lowest accepted to rejected application ratio. 
+
+
+	* Cheking distribution of annual income by category for each label:
+
+		- In the distribution of annual incomes of accepted and rejected application does not have much variation.
+
+		- commercial associates have higher annual income compared to all other categories. They also have more extream outliers.
+
+		- The median income of rejected applicats seems to be more or less same as the median income of  accepted applicants of the 		same category. State servants whose applications were rejected have lower annual income than those of accepted applicants of 		the same category.
+
+	
+	* Cheking distribution of annual income by occupation type for each label:
+	
+		- Extreme outliers can also be seen for annual income of Managers.
+
+		- Managers having rejected credit card applications have highest median annual income and more variation can be seen in the 		distribution.
+
+		- There is no clear indication that an application got rejected due to lower annual income.
+
+		- In most of the scenarios the median annual income of rejected applications are higher or nearly same than those of accepted 		applications.
+
+
+
+	* Cheking distribution of annual income by education for each label:
+
+		- Except Lower secondary education all other categories have almost same median annual income for accepted and rejected 		applications.
+
+		- Maximum outliers can be seen in Secondary/secondary special education category.
+
+		- No applications were rejected for academic degree holders.
+
+		- Rejected applications in lower secondary education category have least median annual income.
+
+	
+	* Cheking distribution of annual income by housing type for each label:
+
+		- From above plot we can observe that there is no pattern in the annual income of accepted and rejected applications for each 		category of housing type.
+
+		- More extreme outliers can be seen in the House/apartment category of accepted applications.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Handeling missing values:
+	
+	- Now we will start dealing with missing values first by splitting the dataset in order to prevent data leakage.
+
+	- First we see the percentage of null or missinfg values.(This shows type_income have most null value about 30% of missing value).
+
+	- Then we plotted the msno matrix to find the location of missing values.
+
+	- Then plotted the heatmap to see relationship between missing 	values from this we get to observ that there is no co-relation between 	missing values.
+
+	- Missing values in 'type_occupation' are high so its better we drop that column.
+
+	- Deleted the column which has maximum null values.
+	
+	- Then we splitted the data to avoid data leakage.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* Train Test Data Split:
+	Splitting training and testing dataset, considering 30% data for testing with random state as 0, for reproducible results
+
+	- Printed the percentage of missing values of training and testing data.
+
+	- From that we get to know that missing data in all the columns is less than 2% so we can use simple imputation technique.
+
+	- We will impute:
+		- gender with mode
+		-annual_income with median value because it is right-skewed.
+		- age with mean since it is normally distributed.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Imputation in training data:
+	- Imputing gender column with Most frequent Categories.
+
+	- Imputing annual_income column with its median value.
+
+	- Imputing age column with its mean.
+
+* Imputing in testing data:
+	- Imputing gender column with Most frequent Categories.
+
+	- Imputing annual_income column with its median value.
+
+	- Imputing age column with its mean.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Meging clean data and exporting it to CSV file to analyze in SQL.
+	- Merging features and target variable of training data.
+	
+	- Merging features and target variable of test data.
+
+	- Merging cleaned train and test set.
+	
+	- Exporting to csv file.
+
+Then dropped the index value.
+
+Done with missing value imputation.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Encoding Categorical data and Feature Transformation:
+	After missing value imputation now we should move forward to analyse i.e. encoding categorical data.
+	
+	- Encoding of categorical data is an important part of data preparaton as ML algorithm cannot handle categorical data directly, so we 	need to transform them.
+
+	-There are several techniques of data encoding :
+		1) One hot encoding: In this technique, for each category of a feature, we create a new column (sometimes called a dummy 			variable) with binary encoding (0 or 1) to denote whether a particular row belongs to this category. It increases 		dimensionality of data, and can lead to sparse dataset if the number of categories in a column is high.
+
+
+		2) Label Encoding: In this technique, each category is assigned a unique integer value based on its alphabetical or numerical 		order.
+
+		3) Ordinal Encoding: Ordinal encoding is a variation of label encoding, where the labels are assigned based on the order of 		the categories. In this technique, each category is assigned a unique integer label based on its order.
+
+		4) Binary Encoding: It is a combination of label encoding and one-hot encoding. In this technique each category is first 		converted to a numeric value, and then that numeric value is converted into binary form. It is more preferred when we have 		higher categories.
+
+For our datset we will use Ordinal encoding for 'education' and label encoding for rest of the columns which are categorical.
+
+
+
+To encode the education column we need to assign the order of education for encoding.
+
+Then storing encoding classes to objects.
+
+Then transformed and modified the variable in training set.
+
+Also transformed and modified the variable in testing set.
+
+Then stored columns for label encoding in a list.
+
+Transformed and modified the variables in training set.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+After transforming the data we have to treat the outlier:
+	In the distribution of numerical features we have seen some outliers as in 'annual_income' and 'work_experiance' coluns have skewed 	data. so we have to applt some transformation so that the data will be distributed normally.
+
+	There are some transformation techniques as:
+		- Log Transformation
+		- Square Root Transformation
+		- Power Transformation
+		- Box-Cox 
+		- Yeo-Johnson Transformation etc. 
+
+	In our case Log Transformation is applied to 'annual_income' which had large values and Square root transformation is applied to 	'work_experiance' because it has smaller values log transformation will make values even more smaller.
+
+Applied log transformation on training data set of 'annual_income' column. Then visualize the data after transformation. Seen that our data is now normally distributed.
+
+Skewness is 0.26 .
+
+Also applied log transformatio on test data and visualized. Test data set had skewness of 0.10.
+
+For both train and test data set there's seen that the data is almost normally distributed after log transformation.
+
+
+Then applied the sq root transformation on 'work_experiance' column and visualized for both training and testing dataset. we got 0.17 and 0.12 respectively which is almost normally distributed.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Handeling the imbalanced with data resampling technique:
+	- Resampling helps to improve model performance in case of imbalanced dataset. It creates new samples by selecting sata points 	randomly from the original dataset and these new samples can be used to estimate the population characterstics of the data or to test 	the performance of machine learning model.
+
+	- There are several techniques of data resampling which can be broadly classified into two categories.
+
+	
+
+
+Resampling can help to improve model performance in cases of imbalanced data sets. It creates new samples by selecting data points randomly from the original dataset, and these new samples can be used to estimate the population characteristics of the data or to test the performance of a machine learning model.
+
+There are several techniques of data resampling, which can be broadly classified into two categories:
+
+	1) Undersampling: 
+	1. **Undersampling:** This involves reducing the number of samples in the majority class to balance the class distribution with the 	minority class.
+	Drawback of this technique is that it 	can result in loss of useful information.
+
+	2. **Oversampling:** This involves increasing the number of samples in the minority class to balance the class distribution with the majority class. This technique may lead to overfitting.
+
+
+SMOTE (Synthetic Minority Over Sampling)
+
+SMOTE is a commonly used oversampling technique. 
+
+SMOTE works by creating synthetic samples of the minority class, based on those that already exist. It works randomly picking a point from the minority class and computing the K-Nearest Neighbors for this point. The synthetic points are added between the chosen point and its neighbors.
+
+In this project, we're going to balance our data using the **Synthetic Minority Over-sampling Technique** (SMOTE). Unlike Random Over Sampling, SMOTE does not create exact copies of observations, but **creates new, synthetic samples** that are quite similar to the existing observations in the minority class.
+
+- Defined resampling method
+
+- Then fitting and resampling training data values.
+
+- Checking shape of resample data.
+
+- Checked resampled value count.
+
+- Visualizing the change in target value for each category.
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Feature Scaling:
+	Feature scaling is a technique used to standardize the independent features present in the data in a fixed range.
+
+-It is required because many machine  learning algorithm are sensitive to the scale of the input features.
+
+- If the input features have diffrent scales then some featurees may dominate the others and the algorithm may fail to find the optimal solution.
+
+- Feature scaling ensures that all features contribute equally to the algorithm's decision-making process and it can improve the accuracy and speed of the machine learning algorithm.
+
+* There are multiple feature scaling techniques the two most frequently used are:
+	1) Normalization or Min-Max Scaling:
+		It is the process of scaling numerical data to a range 	of values between 0 and 1. The new points is calculated as:
+
+		
+				X-X(min)
+		X(scaled)= ___________________
+	    		     X(max) - X(min)
+
+
+
+	2) Standardization:
+		 It transforms data into a standard normal distribution with a mean of 0 and a standard deviation of 1. The scaled value 		ranges from -3 to +3.
+
+		
+				(X - mean)
+		X(scaled)= ___________________
+	    		      Std. deviation
+
+ 
+ 
+Here, Standard scaling technique is implemented.
+
+
+Done with the scaling , replaced all the nemeric values with scaled values in training and tesring dataset.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Builfing a model:
+
+	- We have done all the required prepocessing.
+	
+	- Now we have to proceed with Machine Learning model.
+
+	- In this project we have constructed multiple machine learning models using various classification algorithms. 
+
+	- To enhance their performance, we have conducted Hyperparameter Tuning, which involves optimizing the settings of each model. 
+
+	- After evaluating the models, we have summarized the results obtained from each algorithm.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Performance Evaluation Metrics:
+	There are diffrent matrics to evaluate the predictive performance of ML model
+		- Accuracy Score
+		- Precision	
+		- Recall	
+		- F1 score
+		- ROC-AUC score
+
+- In our case to make more accurate predictions for rejected applications which will help banks to control fraudulent activities, we need to have increased True Positives (correctly predicted rejected applications) and minimum False Negatives (wrongly predicted actual rejected applications) i.e., we need to focus more on the recall score.
+
+
+- Some of most common evaluation metrics are discussed briefly:
+	1. Accuracy: Accuracy measures the correct predictions made by a model out of total predictions made. Accuracy is not a 		reliable metric when working with imbalanced data because even if the model predicts everything as the majority class, a higher 	accuracy is obtained which is actually useless.
+
+	2. Precision and Recall:
+   	 * Precision is the fraction of true positive results (i.e, the number of correctly identified positive instances) among all instances 	classified as positive. Precision measures how 	accurate the positive predictions are, and it is calculated as:
+
+		
+				  	True Positive
+		Precision = __________________________________
+	    		     True Positive + False Positive
+
+
+   	 * Recall is the fraction of true positive results among all actual positive instances (i.e., the number of correctly identified 	positive instances divided by the total number of positive instances in the dataset). Recall measures how well 	the model is able to 	identify all positive instances. It is calculated as:
+
+		
+				     True Positive
+		Recall =   ________________________________
+	    		     True Positive + False Negative
+    
+
+* Precision and recall are typically inversely related, as precision increases, recall decreases and vice-versa.
+
+	3. ROC-AUC Score:
+     		 - Created by plotting the true positive rate against the false positive rate at various threshold settings
+      		 - Useful for comparing performance of different algorithms 
+      		 - It is a more reliable metric than accuracy in case of imbalanced data.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------  1. Logistic Regression Model:
+	First we will train the Logistic Regression Model on the resampled dataset and then we will predict the values for the test dataset which has imbalance.
+
+	- Defined the logistic regression model.
+
+	- Trained the data on resampled data.
+
+	- We get the accuracy score fot training data is 0.61%.
+
+
+* Evaluating the baseline accuracy we get 88.6%
+
+This indicates that if our model simply predicts the majority class for all cases, we would achieve an accuracy rate of 88.6%. If our model's accuracy falls below this threshold, it implies that the model does not provide any significant improvement in predicting the correct outcomes compared to this baseline approach.
+
+
+With highly imbalanced data, the AUC-ROC curve is a more reliable performance metric, used to compare different classifiers. Moreover, the classification report tells us about the precision and recall of our model, and the confusion matrix actually shows how many rejected cases you can predict correctly. So let's evaluate the performance of our mode
+
+- Accuracy score for test data we get 0.61%
+
+- Then we saw Classification report to evaluate different performance metrics.
+
+- Then plotted the confusion matrix for overview of incorrect predictions.
+
+	The model predicts 192 cases of rejected applications, out of which 32 are actually rejected. We got a very high number of False Positives.
+	This is not a very good performing model, and as a result we have a very low precision score. The model also failed to correctly classify 21 actually rejected applications.
+
+Let's also view the ROC-AUC curve for this model.
+
+Here, we get AUC score of 0.6077. Now, let's try to improve the performance of this model by optimizing the Hyperparamters.
+
+
+Hyperparameter tuning for Logistic Regression:
+	Initialize the list of hyperparameter to be used for various iterations.
+	
+	- Fitted the model in resampled training set.
+
+
+
+Performance Evauation after Hyperparameter Tuning:
+	- We got the accuracy score of 0.60% after Hyperparameter tuning
+
+	- Saw the classification report after that.
+
+	- Saw the confusion matrix for the same.
+	
+	- Got AUC score of 0.61%.
+	
+	- Plotted AUC-RUC curve from that get to know that the number of false positive slightly increased but there is a slight imrovement in 	the performance after performing hyper parameter tuning and we are getting an AUC score of 0.61%
+
+	
+
+----------------------------------------------------------------------------------------------------------------------------------------------  
+
+2. Support Vector Classifier:
+	Same like logistic regression applied SVM on the dataset fitted the model, checked for accuracy score which is we got 0.90% accuracy 	on test data. 
+	- Printed the classification reports.
+
+	- Plotted the confusion matrix get to know that model predicted 39 rejected application out of which 24 actually rejected. We 			got much lower no of false positive this time which increased the precision. However the no of false negative are now increased and 	therefore recall score is not good.
+
+Let's see ROC-AUC curve for this model.
+	- Got the AUC score of 0.70%
+	- Visualized AUC-RUC curve
+	
+
+Now let's optimize the model performance by turning the hyperparameter tunning. Fitting the mofel to train set. Fitted the model and we got best score for grid search. Then trained the model predicted the result got the accuracy of 0.85% . The accuracy we got now is decreased. 
+
+
+After checking the AUC score we get 0.75%
+
+Plotted the AUC-ROC curve the model performance is slightly improved and we are now getting an AUC score of 0.75%
+
+----------------------------------------------------------------------------------------------------------------------------------------------  
+
+3. Decision Tree Classifier:
+	Defined the model, Trained the model on resampled dataset, predicted the test results, Checked the accuracy which is 0.84%
+
+	Saw the classification matrix for the same and visualized the confusion matrix also. In this case the model predicts total 70 cases of rejected applications out of which 26 are actually rejected. We got 44 false positive this time and 
+ false negatives.
+
+AUC score is 0.69%
+Checked for ROC-AUC curve 
+
+Also done hyperparameter tuning for that and got the result as A slight improvement can be seen in the True Positive values and also False Negative values are decreased slightly.
+ 
+ 
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+4. Random Forest Classifier:
+	Also done same process with algorithm got the result as the Random Forest model when trained using 15 estimators, predicts 37 rejected applications out of which 29 were actually rejected. The number of False Positive is less which increased the precision. However, the number of False Negatives is high.
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+5. XG-Boost Classifier:
+	Done same process for XGBoost Model predicts 34 rejected application, out of which 25 are actually rejected. False Negative values are high.
+Model performance is slightly improved and now we are getting 26 True Positives, it seems that XGBoost algorithm is trying to balance precision and recall.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Summary of Results:
+
+
+After performing all the analysis and evaluating performance of different models, here is the summary of results obtained from all the Machine learning algorithms performed here.
+
+Sr. No.	Algorithms	Accuracy	AUC Score
+(1)	Logistic Regression	0.6043	0.6123
+(2)	Support Vector Classifier	0.8516	0.7519
+(3)	Decision Tree Classifier	0.8365	0.7023
+(4)	Random Forest Classifier	0.9291	0.7380
+(5)	XGBoost Classifier	0.9053	0.7247
+Based on the ROC-AUC score, the Support Vector Classifier outperforms the other models. However, when considering accuracy, the Random Forest Classifier performs the best.
+
+	
+
+
+
+
+
+
+
+
+
